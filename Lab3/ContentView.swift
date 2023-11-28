@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var cardCount = 16
-    @State var emoijs = ["😀", "😃", "😄", "😁", "⚽️","🎱","🌍", "💐", "❄️","😀", "😃", "😄", "😁", "⚽️","🎱","🌍", "💐", "❄️"]
+	@ObservedObject var viewModel: MyMemoGameViewModel
+    //@State var emoijs = ["😀", "😃", "😄", "😁", "⚽️","🎱","🌍", "💐", "❄️","😀", "😃", "😄", "😁", "⚽️","🎱","🌍", "💐", "❄️"]
     @State var motyw = "Motyw 1"
     var body: some View {
         Text("Memo").font(.largeTitle)
@@ -17,62 +17,39 @@ struct ContentView: View {
             ScrollView {
                 cardDisplay
             }
-            HStack {
-                //removeCardButton
-                //Spacer()
-                //addCardButton
-                motywy
-                
-            }
+			Button("Shuffle"){
+				viewModel.shuffle()
+			}.foregroundColor(viewModel.themeColor)
+			themes
         }.padding()
     }
     
-    var motywy: some View {
+    var themes: some View {
         HStack {
-            Motyw(themeImage: "face.smiling", themeName: "Motyw 1", emoijs: $emoijs, selectedMotyw: $motyw)
+			Theme(themeName: "Motyw 1", themeImage: "face.smiling", viewModel: viewModel)
             Spacer()
-            Motyw(themeImage: "face.smiling.inverse", themeName: "Motyw 2", emoijs: $emoijs, selectedMotyw: $motyw)
+			Theme(themeName: "Motyw 2", themeImage: "face.smiling.inverse", viewModel: viewModel)
             Spacer()
-            Motyw(themeImage: "facemask", themeName: "Motyw 3", emoijs: $emoijs, selectedMotyw: $motyw)
+			Theme(themeName: "Motyw 3", themeImage: "facemask", viewModel: viewModel)
         }
     }
-    
-        
-        var addCardButton: some View {
-            adjustCardNumber(by: 2, symbol: "+")
-        }
-        
-        var removeCardButton: some View {
-            adjustCardNumber(by: 2, symbol: "-")
-        }
-    
-        
-        var cardDisplay : some View {
-            LazyVGrid(columns:[GridItem(.adaptive(minimum: 80))]) {
-                ForEach(0..<cardCount, id: \.self) {
-                    i in SingleCard(content: emoijs[i]).aspectRatio(2/3, contentMode: .fit)
-                }
-            }.foregroundColor(motyw == "Motyw 1" ? .red : motyw == "Motyw 2" ? .blue : motyw == "Motyw 3" ? .green : .gray)
-        }
-    
-    func adjustCardNumber(by offset: Int, symbol: String) -> some View {
-        if (symbol == "+") {
-            return Button("+") {
-                if cardCount + offset < emoijs.count  {
-                    cardCount += offset
-                }
-            }
-        } else {
-            return Button("-") {
-                if cardCount > offset  {
-                    cardCount -= offset
-                }
-            }
-        }
-    }
+	
+	var cardDisplay : some View {
+		LazyVGrid(columns: [GridItem(.adaptive(minimum: 85), spacing: 0)], spacing: 0){
+			ForEach(viewModel.cards){ card in
+				CardView(card)
+					.aspectRatio(2/3, contentMode: .fit)
+					.padding(4)
+					.onTapGesture {
+						viewModel.choose(card)
+					}
+			}
+		}.foregroundColor(viewModel.themeColor)
+	}
+	
 }
 
 
 #Preview {
-    ContentView()
+	ContentView( viewModel: MyMemoGameViewModel())
 }

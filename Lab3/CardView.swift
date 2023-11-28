@@ -1,16 +1,20 @@
 //
-//  SingleCard.swift
+//  CardView.swift
 //  Lab3
 //
-//  Created by student on 17/10/2023.
+//  Created by student on 28/11/2023.
 //
+
+import Foundation
 
 import SwiftUI
 
 struct CardView: View {
 	var card: MemoGameModel<String>.Card
-		
-	init(_ card: MemoGameModel<String>.Card){self.card = card}
+	
+	init(_ card: MemoGameModel<String>.Card){
+		self.card = card
+	}
 	
 	var body: some View {
 		ZStack{
